@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | DigitVision</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon: #00ffff;
+            --bg-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--bg-gradient);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+        #particles {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        /* Back Arrow */
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 2.2rem;
+            color: var(--neon);
+            text-shadow: 0 0 12px var(--neon);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+            font-weight: bold;
+        }
+        .back-arrow:hover {
+            color: #fff;
+            transform: scale(1.15);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 2.5rem;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 255, 255, 0.1);
+            max-width: 420px;
+            width: 100%;
+        }
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon);
+            text-align: center;
+            text-shadow: 0 0 15px var(--neon);
+            margin-bottom: 1.5rem;
+        }
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: #fff;
+            border-radius: 10px;
+            padding: 0.75rem;
+        }
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--neon);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            color: #fff;
+        }
+        .btn-neon {
+            background: transparent;
+            border: 2px solid var(--neon);
+            color: var(--neon);
+            font-weight: bold;
+            border-radius: 50px;
+            padding: 0.7rem 1.5rem;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .btn-neon:hover {
+            background: var(--neon);
+            color: #000;
+            box-shadow: 0 0 20px var(--neon);
+        }
+        .toggle-text {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #ccc;
+            font-size: 0.95rem;
+        }
+        .toggle-text a {
+            color: var(--neon);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .toggle-text a:hover {
+            text-decoration: underline;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 1.5rem;
+            height: 60px;
+            filter: drop-shadow(0 0 10px var(--neon));
+            border-radius: 20px;
+            object-fit: cover;
+        }
+        .alert {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Back Arrow (REAL ARROW SYMBOL) -->
+    <div class="back-arrow" onclick="window.location.href='layout.html'" title="Back to Home">
+        &larr;
+    </div>
+
+    <div id="particles"></div>
+
+    <div class="card">
+        <img src="./logo.jpg" alt="DigitVision Logo" class="logo">
+        <h2 id="formTitle">Sign In</h2>
+
+        <form id="authForm">
+            <div id="signupFields" style="display:none;">
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="name" placeholder="Full Name" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <input type="email" class="form-control" id="email" placeholder="Email Address" required>
+            </div>
+            <div class="mb-3">
+                <input type="password" class="form-control" id="password" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn btn-neon" id="submitBtn">Sign In</button>
+        </form>
+
+        <div class="toggle-text" id="toggleMessage">
+            Don't have an account? <a href="#" id="toggleLink">Sign Up &larr;</a>
+        </div>
+
+        <div id="alertBox"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS('particles', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: '#00ffff' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 150, color: '#00ffff', opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 1.5, direction: 'none', random: false, straight: false, out_mode: 'out' }
+            },
+            interactivity: { detect_on: 'window', events: { onhover: { enable: true, mode: 'repulse' } } },
+            retina_detect: true
+        });
+
+        const isSignup = { value: false };
+        const formTitle = document.getElementById('formTitle');
+        const signupFields = document.getElementById('signupFields');
+        const submitBtn = document.getElementById('submitBtn');
+        const toggleMessage = document.getElementById('toggleMessage');
+        const alertBox = document.getElementById('alertBox');
+
+        // Toggle between Sign In and Sign Up
+        toggleMessage.addEventListener('click', (e) => {
+            if (e.target.id !== 'toggleLink') return;
+            e.preventDefault();
+
+            isSignup.value = !isSignup.value;
+            formTitle.textContent = isSignup.value ? 'Sign Up' : 'Sign In';
+            signupFields.style.display = isSignup.value ? 'block' : 'none';
+            submitBtn.textContent = isSignup.value ? 'Create Account' : 'Sign In';
+
+            // REAL ARROW SYMBOLS
+            toggleMessage.innerHTML = isSignup.value
+                ? 'Already have an account? <a href="#" id="toggleLink">Sign In &rarr;</a>'
+                : 'Don\'t have an account? <a href="#" id="toggleLink">Sign Up &larr;</a>';
+
+            alertBox.innerHTML = '';
+        });
+
+        // Form Submit → Always go to home.html
+        document.getElementById('authForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const nameInput = document.getElementById('name');
+            
+            // Determine name based on signup state
+            const name = isSignup.value ? (nameInput ? nameInput.value.trim() : '') : 'User';
+
+            // Validation
+            if (!email || !password) {
+                showAlert('Please fill all required fields.', 'danger');
+                return;
+            }
+            if (isSignup.value && !name) {
+                showAlert('Please enter your name.', 'danger');
+                return;
+            }
+            if (password.length < 6) {
+                showAlert('Password must be at least 6 characters.', 'warning');
+                return;
+            }
+
+            // Use URL params instead of localStorage for file:// protocol compatibility
+            const user = { name: isSignup.value ? name : (email.split('@')[0] || 'User'), email };
+            const params = new URLSearchParams({
+                loggedIn: 'true',
+                user: JSON.stringify(user)
+            });
+
+            showAlert(`Welcome, ${user.name}! Redirecting...`, 'success');
+
+            setTimeout(() => {
+                window.location.href = 'home.html?' + params.toString();
+            }, 1200);
+        });
+
+        function showAlert(msg, type) {
+            alertBox.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+        }
+    </script>
+</body>
+</html>

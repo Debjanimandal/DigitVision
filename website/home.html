@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigitVision - Handwritten Digit Recognition</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon: #00ffff;
+            --bg-dark: #0f0c29;
+            --bg-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--bg-gradient);
+            color: #fff;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Back Arrow */
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 2.2rem;
+            color: var(--neon);
+            text-shadow: 0 0 12px var(--neon);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 1000;
+            font-weight: bold;
+        }
+        .back-arrow:hover {
+            color: #fff;
+            transform: scale(1.15);
+        }
+
+        /* ---------- PARTICLES ---------- */
+        #particles {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        /* ---------- NAVBAR ---------- */
+        .navbar {
+            background: rgba(15, 12, 41, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.1);
+            padding: 0.8rem 1rem;
+        }
+
+        .navbar-brand img {
+            height: 50px;
+            transition: transform .3s ease;
+            border-radius: 15px;
+            object-fit: cover;
+        }
+        .navbar-brand img:hover { transform: scale(1.1); }
+
+        .navbar-nav .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+            margin: 0 10px;
+            position: relative;
+            transition: all .3s;
+        }
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 50%;
+            background: var(--neon);
+            transition: all .3s;
+            transform: translateX(-50%);
+        }
+        .navbar-nav .nav-link:hover::after,
+        .navbar-nav .nav-link.active::after { width: 80%; }
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active { color: var(--neon) !important; text-shadow: 0 0 8px var(--neon); }
+
+        /* ---------- MAIN CONTENT ---------- */
+        .main-content {
+            padding-top: 7rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            z-index: 1;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            color: var(--neon);
+            text-align: center;
+            text-shadow: 0 0 20px var(--neon), 0 0 40px var(--neon);
+            animation: glow 2s infinite alternate;
+            margin-bottom: 1.5rem;
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 15px var(--neon), 0 0 30px var(--neon); }
+            to   { text-shadow: 0 0 25px var(--neon), 0 0 50px var(--neon); }
+        }
+
+        .lead { text-align:center; font-size:1.2rem; opacity:.9; margin-bottom:2.5rem; }
+
+        /* ---------- TABS ---------- */
+        .nav-tabs { border:none; justify-content:center; margin-bottom:2rem; }
+        .nav-tabs .nav-link {
+            background:transparent; border:none; color:#ccc; font-weight:500;
+            padding:.8rem 1.5rem; border-radius:50px; margin:0 10px; transition:all .3s;
+        }
+        .nav-tabs .nav-link.active {
+            background:rgba(0,255,255,.15); color:var(--neon)!important;
+            border:2px solid var(--neon); box-shadow:0 0 15px rgba(0,255,255,.3);
+        }
+
+        .tab-pane {
+            background:rgba(255,255,255,.08); border-radius:20px; padding:2.5rem;
+            backdrop-filter:blur(12px); border:1px solid rgba(0,255,255,.2);
+            box-shadow:0 8px 32px rgba(0,255,255,.1);
+        }
+
+        /* ---------- CANVAS (PENCIL CURSOR) ---------- */
+        #canvas {
+            border:3px solid var(--neon);
+            border-radius:15px;
+            background:#fff;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>') 2 22, crosshair;
+            touch-action:none;
+            box-shadow:0 0 20px rgba(0,255,255,.3);
+        }
+        .eraser-mode #canvas {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/><path d="M9 15l6-6"/></svg>') 12 12, crosshair;
+        }
+
+        #preview {
+            max-width:100%; border:3px solid var(--neon); border-radius:15px;
+            display:none; margin-top:1rem; box-shadow:0 0 20px rgba(0,255,255,.3);
+        }
+
+        /* ---------- BUTTONS ---------- */
+        .btn-neon {
+            background:transparent; border:2px solid var(--neon); color:var(--neon);
+            font-weight:bold; padding:.6rem 1.4rem; border-radius:50px;
+            transition:all .3s; box-shadow:0 0 10px rgba(0,255,255,.4); margin:.3rem;
+        }
+        .btn-neon:hover, .btn-neon.active {
+            background:var(--neon); color:#000; box-shadow:0 0 25px var(--neon);
+            transform:translateY(-2px);
+        }
+
+        #result-upload, #result-draw {
+            font-size:2.2rem; color:#00ff00; text-shadow:0 0 15px #00ff00;
+            margin-top:1.5rem; font-weight:bold;
+        }
+
+        @media (max-width:768px){
+            .main-content { padding-top:6rem; }
+            h1 { font-size:2.5rem; }
+            .navbar-brand img { height:40px; }
+            .tab-pane { padding:1.5rem; }
+            #canvas { width:100%; height:auto; }
+            .btn-neon { padding:.5rem 1rem; font-size:.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Back Arrow -->
+    <div class="back-arrow" onclick="window.location.href='layout.html'" title="Back to Layout">
+        &larr;
+    </div>
+
+    <!-- PARTICLES -->
+    <div id="particles"></div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="./logo.jpg" alt="DigitVision Logo" id="logo">
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon" style="filter:invert(1);"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                   <li class="nav-item"><a class="nav-link active" href="#upload">Upload</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#draw">Draw</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+                 <li class="nav-item ms-3 d-flex align-items-center gap-2">
+                  <span id="userName" style="color:#00ffff; font-weight:500;"></span>
+                 <button id="logoutBtn" class="btn btn-neon btn-sm">Logout</button>
+                  </li>
+                 </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <h1>DigitVision</h1>
+        <p class="lead">Upload a handwritten digit or draw it live — powered by deep learning.</p>
+
+        <!-- TABS -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload">Upload Image</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="draw-tab" data-bs-toggle="tab" data-bs-target="#draw">Draw Digit</button>
+            </li>
+        </ul>
+
+        <div class="tab-content mt-4">
+            <!-- ==== UPLOAD ==== -->
+            <div class="tab-pane fade show active" id="upload" role="tabpanel">
+                <div class="text-center">
+                    <p style="color: #00ffff; margin-bottom: 1rem; font-size: 0.95rem;">
+                        ℹ️ Upload an image containing <strong>ONE handwritten digit (0-9)</strong>
+                    </p>
+                    <input type="file" id="fileInput" accept="image/*" class="form-control mb-4" style="max-width:500px;margin:0 auto;">
+                    <img id="preview" alt="Image Preview">
+                    <button id="predictUpload" class="btn btn-neon mt-3">Predict Digit</button>
+                    <div id="result-upload"></div>
+                </div>
+            </div>
+
+            <!-- ==== DRAW ==== -->
+            <div class="tab-pane fade" id="draw" role="tabpanel">
+                <div class="text-center">
+                    <p style="color: #00ffff; margin-bottom: 1rem; font-size: 0.95rem;">
+                        ⚠️ <strong>Draw ONE digit only (0-9)</strong> - The model recognizes single digits.
+                    </p>
+                    <canvas id="canvas" width="280" height="280"></canvas>
+
+                    <div class="mt-4 d-flex justify-content-center flex-wrap gap-2">
+                        <button id="toolPencil" class="btn btn-neon active">Pencil</button>
+                        <button id="toolEraser" class="btn btn-neon">Eraser</button>
+                        <button id="clearCanvas" class="btn btn-neon">Clear All</button>
+                        <button id="predictDraw" class="btn btn-neon">Predict Digit</button>
+                    </div>
+
+                    <div id="result-draw"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // ==== PROTECT THIS PAGE (using URL params for file:// compatibility) ====
+        const urlParams = new URLSearchParams(window.location.search);
+        const loggedIn = urlParams.get('loggedIn');
+        const userStr = urlParams.get('user');
+
+        if (loggedIn !== 'true' || !userStr) {
+            window.location.href = 'sign.html';
+        }
+
+        // ==== SHOW USER NAME ====
+        const user = JSON.parse(userStr || '{}');
+        const userNameEl = document.getElementById('userName');
+        if (userNameEl) {
+            userNameEl.textContent = user.name || user.email.split('@')[0];
+        }
+
+        // ==== LOGOUT BUTTON ====
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                window.location.href = 'sign.html';
+            });
+        }
+
+        /* ---------- PARTICLES ---------- */
+        particlesJS('particles', {
+            particles: {
+                number: { value: 90, density: { enable: true, value_area: 800 } },
+                color: { value: '#00ffff' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.6, random: true },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 140, color: '#00ffff', opacity: 0.3, width: 1 },
+                move: { enable: true, speed: 1.5, direction: 'none', random: false, straight: false, out_mode: 'out' }
+            },
+            interactivity: { detect_on: 'window', events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' }, resize: true } },
+            retina_detect: true
+        });
+
+        /* ---------- TAB ↔ NAVBAR SYNC ---------- */
+        document.querySelectorAll('#myTab button').forEach(t => {
+            t.addEventListener('shown.bs.tab', e => {
+                document.querySelectorAll('.navbar-nav .nav-link').forEach(l => {
+                    l.classList.remove('active');
+                    if (l.getAttribute('href') === '#' + e.target.getAttribute('data-bs-target')) l.classList.add('active');
+                });
+            });
+        });
+
+        /* ---------- UPLOAD ---------- */
+        const fileInput = document.getElementById('fileInput');
+        const preview   = document.getElementById('preview');
+        const predictUpload = document.getElementById('predictUpload');
+        const resultUpload = document.getElementById('result-upload');
+
+        fileInput.addEventListener('change', e => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = ev => { preview.src = ev.target.result; preview.style.display = 'block'; };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        predictUpload.addEventListener('click', () => {
+            if (!fileInput.files[0]) return alert('Please upload an image.');
+            resultUpload.textContent = 'Processing...';
+            const fd = new FormData(); fd.append('image', fileInput.files[0]);
+            fetch('/predict_upload', { method: 'POST', body: fd })
+                .then(r => r.json())
+                .then(d => {
+                    if (d.error) {
+                        resultUpload.textContent = `Error: ${d.error}`;
+                    } else {
+                        resultUpload.textContent = `Predicted: ${d.prediction} (Confidence: ${d.confidence}%)`;
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    resultUpload.textContent = 'Prediction failed. Check console for details.';
+                });
+        });
+
+        /* ---------- DRAW (PENCIL + ERASER) ---------- */
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let drawing = false, isEraser = false;
+
+        const toolPencil = document.getElementById('toolPencil');
+        const toolEraser = document.getElementById('toolEraser');
+
+        function setTool(eraser) {
+            isEraser = eraser;
+            canvas.classList.toggle('eraser-mode', eraser);
+            toolPencil.classList.toggle('active', !eraser);
+            toolEraser.classList.toggle('active', eraser);
+        }
+        toolPencil.onclick = () => setTool(false);
+        toolEraser.onclick = () => setTool(true);
+
+        // Mouse
+        canvas.addEventListener('mousedown', e => { drawing = true; draw(e); });
+        canvas.addEventListener('mouseup', () => { drawing = false; ctx.beginPath(); });
+        canvas.addEventListener('mousemove', draw);
+
+        // Touch
+        canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; draw(e.touches[0]); });
+        canvas.addEventListener('touchend', () => { drawing = false; ctx.beginPath(); });
+        canvas.addEventListener('touchmove', e => { e.preventDefault(); if (drawing) draw(e.touches[0]); });
+
+        function draw(e) {
+            if (!drawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            ctx.lineWidth = 22;
+            ctx.lineCap = 'round';
+
+            if (isEraser) {
+                ctx.globalCompositeOperation = 'destination-out';
+            } else {
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.strokeStyle = '#000';
+            }
+
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        document.getElementById('clearCanvas').addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            document.getElementById('result-draw').textContent = '';
+            setTool(false);
+        });
+
+        document.getElementById('predictDraw').addEventListener('click', () => {
+            document.getElementById('result-draw').textContent = 'Processing...';
+            const imageData = canvas.toDataURL('image/png');
+            fetch('/predict_canvas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: imageData })
+            })
+            .then(r => r.json())
+            .then(d => {
+                if (d.error) {
+                    document.getElementById('result-draw').textContent = `Error: ${d.error}`;
+                } else {
+                    document.getElementById('result-draw').textContent = `Predicted: ${d.prediction} (Confidence: ${d.confidence}%)`;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('result-draw').textContent = 'Prediction failed. Check console for details.';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigitVision - AI Handwritten Digit Recognition</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon: #00ffff;
+            --bg-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--bg-gradient);
+            color: #fff;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            position: relative;
+        }
+        #particles {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: rgba(15, 12, 41, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.1);
+            padding: 0.8rem 1rem;
+        }
+        .navbar-brand img {
+            height: 50px;
+            transition: transform .3s;
+            border-radius: 15px;
+            object-fit: cover;
+        }
+        .navbar-brand img:hover { transform: scale(1.1); }
+        .navbar-nav .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+            margin: 0 10px;
+            position: relative;
+            transition: all .3s;
+        }
+        .navbar-nav .nav-link::after {
+            content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 50%;
+            background: var(--neon); transition: all .3s; transform: translateX(-50%);
+        }
+        .navbar-nav .nav-link:hover::after, .navbar-nav .nav-link.active::after { width: 80%; }
+        .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active { color: var(--neon) !important; text-shadow: 0 0 8px var(--neon); }
+
+        /* HERO */
+        .hero {
+            padding: 8rem 1rem 4rem;
+            text-align: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4.5rem;
+            color: var(--neon);
+            text-shadow: 0 0 25px var(--neon), 0 0 50px var(--neon);
+            animation: glow 2s infinite alternate;
+            margin-bottom: 1.5rem;
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 20px var(--neon), 0 0 40px var(--neon); }
+            to   { text-shadow: 0 0 30px var(--neon), 0 0 60px var(--neon); }
+        }
+        .hero p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 2.5rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .btn-neon {
+            background: transparent;
+            border: 2px solid var(--neon);
+            color: var(--neon);
+            font-weight: bold;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+        }
+        .btn-neon:hover {
+            background: var(--neon);
+            color: #000;
+            box-shadow: 0 0 30px var(--neon);
+            transform: translateY(-3px);
+        }
+
+        /* FEATURES */
+        .features {
+            padding: 4rem 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .feature-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 300px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 255, 255, 0.1);
+            transition: transform 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        .feature-card h3 {
+            color: var(--neon);
+            margin-bottom: 1rem;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .hero { padding-top: 6rem; }
+            .feature-card { width: 100%; max-width: 350px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="particles"></div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="./logo.jpg" alt="DigitVision Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon" style="filter:invert(1);"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="./sign.html">Sign In</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <h1>DigitVision</h1>
+        <p>Upload a handwritten digit or draw it live — powered by deep learning. Accurate, fast, and futuristic.</p>
+        <a href="./sign.html" class="btn btn-neon">Get Started – Sign In</a>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features" id="features">
+        <div class="feature-card">
+            <h3>Upload & Predict</h3>
+            <p>Upload any image of a handwritten digit and get instant prediction.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Draw Live</h3>
+            <p>Use pencil & eraser to draw digits on a canvas and predict in real-time.</p>
+        </div>
+        <!-- AI-Powered card REMOVED -->
+    </section>
+
+    <footer class="footer">
+        © 2025 DigitVision. All rights reserved.
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS('particles', {
+            particles: {
+                number: { value: 100, density: { enable: true, value_area: 800 } },
+                color: { value: '#00ffff' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.6, random: true },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 150, color: '#00ffff', opacity: 0.3, width: 1 },
+                move: { enable: true, speed: 1.5, direction: 'none', random: false, straight: false, out_mode: 'out' }
+            },
+            interactivity: { detect_on: 'window', events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' } } },
+            retina_detect: true
+        });
+    </script>
+</body>
+</html>
