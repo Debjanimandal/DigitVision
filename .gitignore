@@ -36,8 +36,6 @@ Thumbs.db
 
 # Project specific
 debug_preprocessed.png
-*.h5
 *.keras
 convert_model.py
-dataset/
 netlify/
