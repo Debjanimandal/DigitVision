@@ -50,6 +50,9 @@ It uses a CNN model trained with **~99% accuracy** on the MNIST dataset and depl
 Model trained on Kaggle and saved as `mnist_cnn_model.h5` for deployment.
 
 ---
+## CNN notebook 
+- **Uploaded as digit-recogni.ipynb**
+- **Also get the direct access of the kaggle notebook :** https://www.kaggle.com/code/debjanitiya/digit-recogni
 
 ## 🧩 Tech Stack
 
